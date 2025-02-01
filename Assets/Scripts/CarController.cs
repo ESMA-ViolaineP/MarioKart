@@ -8,22 +8,16 @@ public class CarController : MonoBehaviour
     private Rigidbody _rb;
 
     [SerializeField]
-    private float _accelerationFactor, _accelerationLerpInterpolator, _rotationSpeed = 0.5f;
+    private float _accelerationFactor, _decelerationFactor, _accelerationLerpInterpolator, _decelerationLerpInterpolator, _rotationSpeed = 0.5f;
 
-    public float speedMax = 3;
-
-    [SerializeField]
-    private float _deccelerationFactor, _deccelerationLerpInterpolator;
+    public float speedMax;
 
     private float speed;
-    private bool _isAccelerating;
-
-    private bool isMovingFoward;
+    private float accelerationSpeed, decelerationSpeed;
+    private bool _isAccelerating, _isMovingBackwards;
 
     [SerializeField]
-    private AnimationCurve _accelerationCurve;
-    [SerializeField]//test
-    private AnimationCurve _deccelerationCurve;
+    private AnimationCurve _accelerationCurve, _decelerationCurve;
 
     void Start()
     {
@@ -32,20 +26,11 @@ public class CarController : MonoBehaviour
 
     void Update()
     {
-        //if (Input.GetKeyDown(KeyCode.S))
-        //{
-        //    isMovingFoward = false;
-        //    _isAccelerating = true;
-        //}
-        //if (Input.GetKeyUp(KeyCode.S))
-        //{
-        //    _isAccelerating = true;
-        //}
 
         if (Input.GetKeyDown(KeyCode.W))
         {
-            //isMovingFoward = true;
             _isAccelerating = true;
+            _isMovingBackwards = false;
         }
 
         if (Input.GetKeyUp(KeyCode.W))
@@ -53,13 +38,24 @@ public class CarController : MonoBehaviour
             _isAccelerating = false;
         }
 
-        if (Input.GetKey(KeyCode.LeftArrow))
+        if (Input.GetKeyDown(KeyCode.S))
         {
-            transform.eulerAngles += Vector3.down * 
-                _rotationSpeed * Time.deltaTime; 
+            _isAccelerating = true;
+            _isMovingBackwards = true;
         }
 
-        if (Input.GetKey(KeyCode.RightArrow))
+        if (Input.GetKeyUp(KeyCode.S))
+        {
+            _isAccelerating = false;
+            _isMovingBackwards = false;
+        }
+
+        if (Input.GetKey(KeyCode.A))
+        {
+            transform.eulerAngles += Vector3.down * _rotationSpeed * Time.deltaTime; 
+        }
+
+        if (Input.GetKey(KeyCode.D))
         {
             transform.eulerAngles += Vector3.up * _rotationSpeed * Time.deltaTime;
         }
@@ -75,34 +71,31 @@ public class CarController : MonoBehaviour
         if (_isAccelerating)
         {
             _accelerationLerpInterpolator += _accelerationFactor;
-            _accelerationLerpInterpolator -= _deccelerationFactor * 2;
-
-            speed = _accelerationCurve.Evaluate(_accelerationLerpInterpolator) * speedMax;
-
+            _decelerationLerpInterpolator -= _decelerationFactor * 2;
         }
         else
         {
             _accelerationLerpInterpolator -= _accelerationFactor * 2;
-            _deccelerationLerpInterpolator += _deccelerationFactor;
-
-            speed = _deccelerationCurve.Evaluate(_deccelerationLerpInterpolator) * speedMax;
+            _decelerationLerpInterpolator += _decelerationFactor;
         }
+
+
         _accelerationLerpInterpolator = Mathf.Clamp01(_accelerationLerpInterpolator);
-        _deccelerationLerpInterpolator = 1 - Mathf.Clamp01(_accelerationLerpInterpolator);
+        _decelerationLerpInterpolator = Mathf.Clamp01(_decelerationLerpInterpolator);
 
-        _rb.MovePosition(transform.position + transform.forward * speed * Time.fixedDeltaTime);
+        accelerationSpeed = _accelerationCurve.Evaluate(_accelerationLerpInterpolator) * speedMax;
+        decelerationSpeed = _decelerationCurve.Evaluate(_decelerationLerpInterpolator) * speedMax;
 
+        speed = _isAccelerating ? accelerationSpeed : decelerationSpeed;
 
+        if (_isMovingBackwards)
+        {
+            _rb.MovePosition(transform.position - transform.forward * speed * Time.fixedDeltaTime);
 
-        //if (isMovingFoward)
-        //{
-        //    _rb.MovePosition(transform.position + transform.forward * speed * Time.fixedDeltaTime);
-        //}
-        //else
-        //{
-        //    _rb.MovePosition(transform.position - transform.forward * speed * Time.fixedDeltaTime);
-        //}
+        }
+        else
+        {
+            _rb.MovePosition(transform.position + transform.forward * speed * Time.fixedDeltaTime);
+        }
     }
-
-
 }
