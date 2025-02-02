@@ -4,10 +4,9 @@ using UnityEngine;
 
 public class SpeedBoost : MonoBehaviour
 {
-    private float speedBoost = 9;
-
     private CarController carBehaviour;
-    private float speedOriginal;
+
+    private float originalSpeedValue;
 
     void Start()
     {
@@ -22,12 +21,12 @@ public class SpeedBoost : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         carBehaviour = other.GetComponent<CarController>();
-        speedOriginal = carBehaviour.speedMax;
-        carBehaviour.speedMax = speedBoost;
+        originalSpeedValue = carBehaviour.speedMax;
+        carBehaviour.speedMax = originalSpeedValue;
     }
 
     private void OnTriggerExit(Collider other)
     {
-        // Utiliser Decceleration
+        carBehaviour.speedMax = originalSpeedValue;
     }
 }

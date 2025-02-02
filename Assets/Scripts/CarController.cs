@@ -7,14 +7,16 @@ public class CarController : MonoBehaviour
     [SerializeField]
     private Rigidbody _rb;
 
-    [SerializeField]
-    private float _accelerationFactor, _decelerationFactor, _accelerationLerpInterpolator, _decelerationLerpInterpolator, _rotationSpeed = 0.5f;
-
     public float speedMax;
 
-    private float speed;
-    private float accelerationSpeed, decelerationSpeed;
+    [SerializeField]
+    private float _accelerationFactor, _decelerationFactor, _accelerationLerpInterpolator, _decelerationLerpInterpolator, _rotationSpeed = 0.5f;
+    [SerializeField]
+    private float _boostDuration, _boostValue;
+    private float speed, accelerationSpeed, decelerationSpeed;
     private bool _isAccelerating, _isMovingBackwards;
+
+    public ItemScriptable currentItem;
 
     [SerializeField]
     private AnimationCurve _accelerationCurve, _decelerationCurve;
@@ -26,7 +28,7 @@ public class CarController : MonoBehaviour
 
     void Update()
     {
-
+        // Avancer
         if (Input.GetKeyDown(KeyCode.W))
         {
             _isAccelerating = true;
@@ -38,6 +40,7 @@ public class CarController : MonoBehaviour
             _isAccelerating = false;
         }
 
+        // Reculer
         if (Input.GetKeyDown(KeyCode.S))
         {
             _isAccelerating = true;
@@ -50,14 +53,22 @@ public class CarController : MonoBehaviour
             _isMovingBackwards = false;
         }
 
+        // Tourner à gauche
         if (Input.GetKey(KeyCode.A))
         {
             transform.eulerAngles += Vector3.down * _rotationSpeed * Time.deltaTime; 
         }
 
+        // Tourner à droite
         if (Input.GetKey(KeyCode.D))
         {
             transform.eulerAngles += Vector3.up * _rotationSpeed * Time.deltaTime;
+        }
+
+        // Utiliser un Item
+        if (Input.GetKey(KeyCode.E))
+        {
+            UseItem();
         }
 
         var xAngle = Mathf.Clamp(transform.eulerAngles.x + 360, 320, 400);
@@ -98,4 +109,55 @@ public class CarController : MonoBehaviour
             _rb.MovePosition(transform.position + transform.forward * speed * Time.fixedDeltaTime);
         }
     }
+
+    public void ReceiveItem(ItemScriptable randomItem)
+    {
+        currentItem = randomItem;
+    }
+    private void UseItem()
+    {
+        if (currentItem.ItemType == ItemType.None)
+        {
+            return;
+        }
+
+        switch (currentItem.ItemType)
+        {
+            case ItemType.SpeedBoost:
+                UseSpeedBoost();
+                break;
+            case ItemType.Missile:
+                FireMissile();
+                break;
+            case ItemType.Trap:
+                DropTrap();
+                break;
+        }
+    }
+
+    private void UseSpeedBoost()
+    {
+        if (currentItem.ItemName == "Red Mushroom")
+        {
+            StartCoroutine(SpeedBoost());
+        }
+    }
+    private IEnumerator SpeedBoost()
+    {
+        float originalSpeedValue = speedMax;
+        speedMax = _boostValue;
+        yield return new WaitForSeconds(_boostDuration);
+        speedMax = originalSpeedValue;
+    }
+
+    private void FireMissile()
+    {
+
+    }
+
+    private void DropTrap()
+    {
+
+    }
+
 }
