@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CarController : MonoBehaviour
 {
@@ -9,15 +10,18 @@ public class CarController : MonoBehaviour
 
     public float speedMax;
 
+    [Header("Acceleration/Deceleration")]
     [SerializeField]
     private float _accelerationFactor, _decelerationFactor, _accelerationLerpInterpolator, _decelerationLerpInterpolator, _rotationSpeed = 0.5f;
-    [SerializeField]
-    private float _boostDuration, _boostValue;
     private float speed, accelerationSpeed, decelerationSpeed;
     private bool _isAccelerating, _isMovingBackwards;
 
-    public ItemScriptable currentItem;
+    [SerializeField]
+    private LayerMask _layerMask;
+    //[SerializeField] private float _terrainSpeedVariator;
 
+
+    [Header("Curves")]
     [SerializeField]
     private AnimationCurve _accelerationCurve, _decelerationCurve;
 
@@ -25,7 +29,7 @@ public class CarController : MonoBehaviour
     {
 
     }
-
+   
     void Update()
     {
         // Avancer
@@ -75,6 +79,16 @@ public class CarController : MonoBehaviour
         var yAngle = transform.eulerAngles.y;
         var zAngle = transform.eulerAngles.z;
         transform.eulerAngles = new Vector3(xAngle, yAngle, zAngle);
+
+        //if (Physics.Raycast(transform.position, transform.up * -1, out var info,1, _layerMask))
+        //{
+        //    TerrainComponent terrainBellow = info.transform.GetComponent<TerrainComponent>();
+        //    if ( (terrainBellow != null))
+        //    {
+        //        _terrainSpeedVariator = 1;
+        //    }
+        //}
+
     }
 
     private void FixedUpdate() // FixedUpdate = lié à la Physique
@@ -86,8 +100,8 @@ public class CarController : MonoBehaviour
         }
         else
         {
-            _accelerationLerpInterpolator -= _accelerationFactor * 2;
             _decelerationLerpInterpolator += _decelerationFactor;
+            _accelerationLerpInterpolator -= _accelerationFactor * 2;
         }
 
 
@@ -112,16 +126,17 @@ public class CarController : MonoBehaviour
 
     public void ReceiveItem(ItemScriptable randomItem)
     {
-        currentItem = randomItem;
+        GameManager.Instance.CurrentItem = randomItem;
     }
+    
     private void UseItem()
     {
-        if (currentItem.ItemType == ItemType.None)
+        if (GameManager.Instance.CurrentItem.ItemType == ItemType.None)
         {
             return;
         }
 
-        switch (currentItem.ItemType)
+        switch (GameManager.Instance.CurrentItem.ItemType)
         {
             case ItemType.SpeedBoost:
                 UseSpeedBoost();
@@ -133,20 +148,26 @@ public class CarController : MonoBehaviour
                 DropTrap();
                 break;
         }
+
+        GameManager.Instance.ImageSlot001.sprite = null;
     }
 
     private void UseSpeedBoost()
     {
-        if (currentItem.ItemName == "Red Mushroom")
+        if (GameManager.Instance.CurrentItem.ItemName == "Red Mushroom")
         {
-            StartCoroutine(SpeedBoost());
+            StartCoroutine(SpeedBoost(1, 1));
+        }
+        else if (GameManager.Instance.CurrentItem.ItemName == "Star")
+        {
+            StartCoroutine(SpeedBoost(5, 5));
         }
     }
-    private IEnumerator SpeedBoost()
+    private IEnumerator SpeedBoost( float boostValue, float boostDuration)
     {
         float originalSpeedValue = speedMax;
-        speedMax = _boostValue;
-        yield return new WaitForSeconds(_boostDuration);
+        speedMax = boostValue;
+        yield return new WaitForSeconds(boostDuration);
         speedMax = originalSpeedValue;
     }
 
