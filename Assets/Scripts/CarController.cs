@@ -1,38 +1,46 @@
 using System.Collections;
-using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 public class CarController : MonoBehaviour
 {
     [SerializeField]
     private Rigidbody _rb;
 
-    public float speedMax;
-
     [Header("Acceleration/Deceleration")]
     [SerializeField]
-    private float _accelerationFactor, _decelerationFactor, _accelerationLerpInterpolator, _decelerationLerpInterpolator, _rotationSpeed = 0.5f;
+    private float _accelerationFactor, _decelerationFactor, _accelerationLerpInterpolator, _decelerationLerpInterpolator, _rotationSpeed = 0.5f, _speedMaxTurbo = 10;
     private float speed, accelerationSpeed, decelerationSpeed;
-    private bool _isAccelerating, _isMovingBackwards;
+    private bool _isAccelerating, _isMovingBackwards, _isTurbo;
+    
+    public float speedMax;
 
     [SerializeField]
     private LayerMask _layerMask;
     //[SerializeField] private float _terrainSpeedVariator;
 
-
     [Header("Curves")]
     [SerializeField]
     private AnimationCurve _accelerationCurve, _decelerationCurve;
 
-    void Start()
+    public void Turbo(int ItemDelay)
     {
-
+        if (!_isTurbo)
+        {
+            StartCoroutine(Turboroutine(ItemDelay));
+        }
     }
-   
+
+    private IEnumerator Turboroutine(int ItemDelay)
+    {
+        _isTurbo = true;
+        yield return new WaitForSeconds(ItemDelay);
+        _isTurbo = false;
+    }
+
     void Update()
     {
-        // Avancer
         if (Input.GetKeyDown(KeyCode.W))
         {
             _isAccelerating = true;
@@ -44,7 +52,6 @@ public class CarController : MonoBehaviour
             _isAccelerating = false;
         }
 
-        // Reculer
         if (Input.GetKeyDown(KeyCode.S))
         {
             _isAccelerating = true;
@@ -57,22 +64,14 @@ public class CarController : MonoBehaviour
             _isMovingBackwards = false;
         }
 
-        // Tourner à gauche
         if (Input.GetKey(KeyCode.A))
         {
-            transform.eulerAngles += Vector3.down * _rotationSpeed * Time.deltaTime; 
+            transform.eulerAngles += Vector3.down * _rotationSpeed * Time.deltaTime;
         }
 
-        // Tourner à droite
         if (Input.GetKey(KeyCode.D))
         {
             transform.eulerAngles += Vector3.up * _rotationSpeed * Time.deltaTime;
-        }
-
-        // Utiliser un Item
-        if (Input.GetKey(KeyCode.E))
-        {
-            UseItem();
         }
 
         var xAngle = Mathf.Clamp(transform.eulerAngles.x + 360, 320, 400);
@@ -88,11 +87,11 @@ public class CarController : MonoBehaviour
         //        _terrainSpeedVariator = 1;
         //    }
         //}
-
     }
 
-    private void FixedUpdate() // FixedUpdate = lié à la Physique
+    private void FixedUpdate() // FixedUpdate = lie a la Physique
     {
+
         if (_isAccelerating)
         {
             _accelerationLerpInterpolator += _accelerationFactor;
@@ -122,63 +121,14 @@ public class CarController : MonoBehaviour
         {
             _rb.MovePosition(transform.position + transform.forward * speed * Time.fixedDeltaTime);
         }
-    }
 
-    public void ReceiveItem(ItemScriptable randomItem)
-    {
-        GameManager.Instance.CurrentItem = randomItem;
-    }
-    
-    private void UseItem()
-    {
-        if (GameManager.Instance.CurrentItem.ItemType == ItemType.None)
+        if (_isTurbo)
         {
-            return;
+            _speed = _speedMaxTurbo;
         }
-
-        switch (GameManager.Instance.CurrentItem.ItemType)
+        else
         {
-            case ItemType.SpeedBoost:
-                UseSpeedBoost();
-                break;
-            case ItemType.Missile:
-                FireMissile();
-                break;
-            case ItemType.Trap:
-                DropTrap();
-                break;
-        }
-
-        GameManager.Instance.ImageSlot001.sprite = null;
-    }
-
-    private void UseSpeedBoost()
-    {
-        if (GameManager.Instance.CurrentItem.ItemName == "Red Mushroom")
-        {
-            StartCoroutine(SpeedBoost(1, 1));
-        }
-        else if (GameManager.Instance.CurrentItem.ItemName == "Star")
-        {
-            StartCoroutine(SpeedBoost(5, 5));
+            _speed = _accelerationCurve.Evaluate(_accelerationLerpInterpolator) * _speedMaxBasic * _terrainSpeedVariator;
         }
     }
-    private IEnumerator SpeedBoost( float boostValue, float boostDuration)
-    {
-        float originalSpeedValue = speedMax;
-        speedMax = boostValue;
-        yield return new WaitForSeconds(boostDuration);
-        speedMax = originalSpeedValue;
-    }
-
-    private void FireMissile()
-    {
-
-    }
-
-    private void DropTrap()
-    {
-
-    }
-
 }
