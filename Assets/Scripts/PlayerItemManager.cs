@@ -11,7 +11,7 @@ public class PlayerItemManager : MonoBehaviour
     private Item _currentItem;
 
     [SerializeField]
-    private Image _itemImage, _itemTimer;
+    private Image _itemImage;
 
     [SerializeField]
     private int _numberOfItemUse;
@@ -48,16 +48,4 @@ public class PlayerItemManager : MonoBehaviour
             }
         }
     }
-
-    public void Timer()
-    {
-        float timer = 0;
-        float maxTimer = 10;
-
-        while (maxTimer > timer)
-        {
-            timer -= Time.DelaTime;
-        }
-    }
-
 }

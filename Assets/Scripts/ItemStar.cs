@@ -6,7 +6,6 @@ public class ItemStar : Item
 {
     public override void Activation(PlayerItemManager player)
     {
-        player.carController.Turbo(10);
-        player.Timer();
+        player.carController.SuperTurbo();
     }
 }

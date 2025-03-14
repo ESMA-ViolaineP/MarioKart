@@ -12,8 +12,9 @@ public class CarController : MonoBehaviour
     [SerializeField]
     private float _accelerationFactor, _decelerationFactor, _accelerationLerpInterpolator, _decelerationLerpInterpolator, _rotationSpeed = 0.5f, _speedMaxTurbo = 10;
     private float speed, accelerationSpeed, decelerationSpeed;
-    private bool _isAccelerating, _isMovingBackwards, _isTurbo;
+    private bool _isAccelerating, _isMovingBackwards;
     
+    public bool IsTurbo;
     public float speedMax;
 
     [SerializeField]
@@ -26,7 +27,7 @@ public class CarController : MonoBehaviour
 
     public void Turbo(int ItemDelay)
     {
-        if (!_isTurbo)
+        if (!IsTurbo)
         {
             StartCoroutine(Turboroutine(ItemDelay));
         }
@@ -34,9 +35,18 @@ public class CarController : MonoBehaviour
 
     private IEnumerator Turboroutine(int ItemDelay)
     {
-        _isTurbo = true;
+        IsTurbo = true;
         yield return new WaitForSeconds(ItemDelay);
-        _isTurbo = false;
+        IsTurbo = false;
+    }
+
+    public void SuperTurbo ()
+    {
+        if (!IsTurbo)
+        {
+            IsTurbo = true;
+            PlayerCircuitManager.Instance.TimerIsUsed = true;
+        }
     }
 
     void Update()
@@ -103,7 +113,6 @@ public class CarController : MonoBehaviour
             _accelerationLerpInterpolator -= _accelerationFactor * 2;
         }
 
-
         _accelerationLerpInterpolator = Mathf.Clamp01(_accelerationLerpInterpolator);
         _decelerationLerpInterpolator = Mathf.Clamp01(_decelerationLerpInterpolator);
 
@@ -122,13 +131,13 @@ public class CarController : MonoBehaviour
             _rb.MovePosition(transform.position + transform.forward * speed * Time.fixedDeltaTime);
         }
 
-        if (_isTurbo)
+        if (IsTurbo)
         {
-            _speed = _speedMaxTurbo;
+            speed = _speedMaxTurbo;
         }
         else
         {
-            _speed = _accelerationCurve.Evaluate(_accelerationLerpInterpolator) * _speedMaxBasic * _terrainSpeedVariator;
+            speed = _accelerationCurve.Evaluate(_accelerationLerpInterpolator) * speedMax; //* _terrainSpeedVariator;
         }
     }
 }

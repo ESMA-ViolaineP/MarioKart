@@ -1,44 +1,36 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Checkpoint : MonoBehaviour
 {
     [Header("Conditions")]
     [SerializeField] private bool _isACircuitCheckpoint;
-    //[SerializeField] private bool _isARespawnCheckpoint;
     [SerializeField] private bool _isAFinishLineCheckpoint;
 
     [Header("Values")]
     [SerializeField] private int _circuitCheckpointNumber;
-    //[SerializeField] private int _respawnCheckpointNumber;
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
         {
-            PlayerCircuitManager playerCircuitManager = other.GetComponent<PlayerCircuitManager>();
+            PlayerCircuitManager.Instance.CheckpointPosition = other.GetComponent<Transform>().position;
 
-            if (_isACircuitCheckpoint && (playerCircuitManager.CircuitCheckpointCount == _circuitCheckpointNumber - 1))
+            if (_isACircuitCheckpoint && (PlayerCircuitManager.Instance.CircuitCheckpointCount == _circuitCheckpointNumber - 1))
             {
-                playerCircuitManager.CircuitCheckpointCount = _circuitCheckpointNumber;
+                PlayerCircuitManager.Instance.CircuitCheckpointCount = _circuitCheckpointNumber;
             }
-            //else if (_isARespawnCheckpoint && playerCircuitManager.RespawnCheckpointCount < _circuitCheckpointNumber)
-            //{
-            //    playerCircuitManager.RespawnCheckpointCount = _respawnCheckpointNumber;
-            //}
+
             else if (_isAFinishLineCheckpoint)
             {
-                if (playerCircuitManager.CircuitCheckpointCount == CircuitManager.Instance.TotalCircuitCheckpoints)
+                if (PlayerCircuitManager.Instance.CircuitCheckpointCount == PlayerCircuitManager.Instance.TotalCircuitCheckpoints)
                 {
-                    playerCircuitManager.CircuitCheckpointCount = 0;
-                    playerCircuitManager.RespawnCheckpointCount = 0;
-                    playerCircuitManager.RoundCount += 1;
+                    PlayerCircuitManager.Instance.CircuitCheckpointCount = 0;
+                    PlayerCircuitManager.Instance.RoundCount += 1;
                 }
                 
-                if (playerCircuitManager.RoundCount == CircuitManager.Instance.TotalRound)
+                if (PlayerCircuitManager.Instance.RoundCount == PlayerCircuitManager.Instance.TotalRound)
                 {
-                    Debug.Log("Circuit terminé ! Bravo !");
+                    Debug.Log("Circuit termine ! Bravo !");
                 }
             }
         }

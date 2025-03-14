@@ -30,6 +30,5 @@ public class ItemBox : MonoBehaviour
         _collider.enabled = true;
         _text.enabled = true;
         _meshRenderer.enabled = true;
-
     }
 }
