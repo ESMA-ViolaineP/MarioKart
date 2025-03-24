@@ -1,22 +1,24 @@
+using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class KartSelection : MonoBehaviour
 {
-    [Header("Karts")]
+    [Header("Kart")]
     [SerializeField]
-    private GameObject[] _karts;
+    private GameObject _kart;
     [SerializeField]
-    private Transform _kartTransform;
+    private MeshRenderer _kartMeshRenderer;
 
-    private GameObject currentKart;
-    private int currentIndex = 0;
+    [Header("Materials")]
+    private int currentColorIndex = 0;
+    private int materialIndex = 3;
 
     [Header("Player")]
     [SerializeField]
     private bool _isPlayerOne;
-    private int indexPlayers;
+    private int playerIndex;
     private Color customColor;
 
     [Header("UI Menus")]
@@ -28,7 +30,6 @@ public class KartSelection : MonoBehaviour
     private GameObject _playerChoosingText001;
     [SerializeField]
     private GameObject _playerChoosingText002;
-
     [SerializeField]
     private GameObject _startMenu;
     [SerializeField]
@@ -36,17 +37,12 @@ public class KartSelection : MonoBehaviour
 
     private void Start()
     {
-        currentIndex = PlayerPrefs.GetInt("Kart_Player_001", 0);
-        currentIndex = PlayerPrefs.GetInt("Kart_Player_002", 1);
-        SpawnKart(currentIndex);
+        ApplyColor(0);
     }
 
     private void Update()
     {
-        if (currentKart != null)
-        {
-            currentKart.transform.Rotate(Vector3.down * 30 * Time.deltaTime);
-        }
+        _kart.transform.Rotate(Vector3.down * 30 * Time.deltaTime);
 
         if (_isPlayerOne)
         {
@@ -60,71 +56,60 @@ public class KartSelection : MonoBehaviour
 
     public void HoverKart(int index)
     {
-        if (index != currentIndex)
+        if (index != currentColorIndex)
         {
-            SpawnKart(index);
+            ApplyColor(index);
         }
     }
 
-    private void SpawnKart(int index)
+    private void ApplyColor(int index)
     {
-        if (currentKart != null)
-        {
-            Destroy(currentKart);
-        }
+        Material[] materials = _kartMeshRenderer.materials;
+        materials[materialIndex] = GameManager.Instance.ColorMaterialKart[index];
+        _kartMeshRenderer.materials = materials;
 
-        currentKart = Instantiate(_karts[index], _kartTransform.position, _kartTransform.rotation);
-        currentKart.transform.SetParent(_kartTransform);
-        currentKart.transform.localScale = new Vector3(1.1f, 1.1f, 1.1f);
-
-        currentIndex = index;
+        currentColorIndex = index;
     }
 
     public void ConfirmSelection(Button KartButton)
     {
-        indexPlayers += 1;
+        playerIndex += 1;
 
-        if (indexPlayers == 1)
+        if (playerIndex == 1)
         {
-            _buttons[currentIndex].interactable = false;
-            _buttonsOutliners[currentIndex].color = customColor;
+            _buttons[currentColorIndex].interactable = false;
+            _buttonsOutliners[currentColorIndex].color = customColor;
 
-            PlayerPrefs.SetInt("Kart_Player_001", currentIndex);
-            PlayerPrefs.Save();
+            GameManager.Instance.SelectionPlayer01 = currentColorIndex;
 
             _isPlayerOne = false;
-
             _playerChoosingText001.SetActive(false);
             _playerChoosingText002.SetActive(true);
         }
-        if (indexPlayers == 2)
+        if (playerIndex == 2)
         {
-            _buttons[currentIndex].interactable = false;
-            _buttonsOutliners[currentIndex].color = customColor;
+            _buttons[currentColorIndex].interactable = false;
+            _buttonsOutliners[currentColorIndex].color = customColor;
 
-            PlayerPrefs.SetInt("Kart_Player_002", currentIndex);
-            PlayerPrefs.Save();
+            GameManager.Instance.SelectionPlayer02 = currentColorIndex;
 
-            DisplayStartGameMenu();
+            ActivateStartMenu();
         }
     }
 
-    public void DisplayStartGameMenu()
+    public void ActivateStartMenu()
     {
         _startMenu.SetActive(true);
     }
 
     public void ReturnSelectionMenu()
     {
-        currentIndex = PlayerPrefs.GetInt("Kart_Player_001", 0);
-        currentIndex = PlayerPrefs.GetInt("Kart_Player_002", 1);
-
         _playerChoosingText001.SetActive(true);
         _playerChoosingText002.SetActive(false);
 
-        SpawnKart(currentIndex);
+        ApplyColor(0);
         _isPlayerOne = true;
-        indexPlayers = 0;
+        playerIndex = 0;
 
         int indexA = 0;
         while(indexA < _buttons.Length)
