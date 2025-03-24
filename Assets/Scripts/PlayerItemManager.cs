@@ -16,7 +16,7 @@ public class PlayerItemManager : MonoBehaviour
     [SerializeField]
     private int _numberOfItemUse;
 
-    public CarController carController;
+    public KartController Kart;
 
     private void Update()
     {

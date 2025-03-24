@@ -26,7 +26,7 @@ public class DeathZone : MonoBehaviour
     {
         _transitionImage.SetActive(true);
         yield return new WaitForSeconds(1);
-        other.GetComponent<Transform>().position = PlayerCircuitManager.Instance.CheckpointPosition;
+        //other.GetComponent<Transform>().position = PlayerCircuitManager.Instance.CheckpointPosition;
         yield return new WaitForSeconds(0.5f);
         _transitionImage.SetActive(false);
     }

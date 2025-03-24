@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-
 public class LapManager : MonoBehaviour
 {
     private int _lapNumber;
@@ -17,12 +16,12 @@ public class LapManager : MonoBehaviour
 
     public void AddCheckPoint(CheckPoint checkPointToAdd)
     {
-        if(checkPointToAdd.isFinishLine)
+        if (checkPointToAdd.isFinishLine)
         {
             FinishLap();
         }
 
-        if(_checkpoints.Contains(checkPointToAdd) == false)
+        if (_checkpoints.Contains(checkPointToAdd) == false)
         {
             _checkpoints.Add(checkPointToAdd);
         }
@@ -30,15 +29,16 @@ public class LapManager : MonoBehaviour
 
     private void FinishLap()
     {
-        if (_checkpoints.Count > _numberOfCheckpoints/2)
+        if (_checkpoints.Count > _numberOfCheckpoints / 2)
         {
             _lapNumber++;
-            Debug.Log("Tour Fini, on entre dans le tour " +  _lapNumber);
+            Debug.Log("Tour Fini, on entre dans le tour " + _lapNumber);
             _checkpoints.Clear();
-            if(_lapNumber>=3)
+            if (_lapNumber >= 3)
             {
                 Debug.Log("Gg WP");
             }
         }
     }
 }
+
