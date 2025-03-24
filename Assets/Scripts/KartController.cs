@@ -21,14 +21,14 @@ public class KartController : MonoBehaviour
 
     [Header("Acceleration/Deceleration")]
     [SerializeField]
-    private float _accelerationFactor, _decelerationFactor, _accelerationLerpInterpolator, _decelerationLerpInterpolator;
-    private float accelerationSpeed, decelerationSpeed;
+    private float _accelerationFactor, _decelerationFactor, _accelerationLerpInterpolator;
     private bool isAccelerating;
 
     [Header("Speed")]
-    private float _rotationSpeed = 35f, _speedMax = 10, _speedMaxBoost = 10, _speed;
-    private float maxAngle = 360;
+    private float speedMax = 10, speedMaxBoost = 10, speedMin = 0, speed;
+    private float rotationSpeed = 35f, maxAngle = 360;
     public bool UseBoost;
+    public bool isTrapped;
 
     [Header("Terrain Influence")]
     [SerializeField]
@@ -57,6 +57,20 @@ public class KartController : MonoBehaviour
         UseBoost = false;
     }
 
+    public void Trap(int ItemDelay)
+    {
+        if (!isTrapped)
+        {
+            StartCoroutine(TrapRoutine(ItemDelay));
+        }
+    }
+
+    private IEnumerator TrapRoutine(int ItemDelay)
+    {
+        isTrapped = true;
+        yield return new WaitForSeconds(ItemDelay);
+        isTrapped = false;
+    }
     void Start()
     {
         _accelerationLerpInterpolator = 0f;
@@ -80,13 +94,8 @@ public class KartController : MonoBehaviour
 
         if (rotationInput != 0)
         {
-            transform.eulerAngles += Vector3.up * rotationInput * _rotationSpeed * Time.deltaTime;
+            transform.eulerAngles += Vector3.up * rotationInput * rotationSpeed * Time.deltaTime;
         }
-
-        var xAngle = Mathf.Clamp(transform.eulerAngles.x + 360, 320, 400);
-        var yAngle = transform.eulerAngles.y;
-        var zAngle = transform.eulerAngles.z;
-        transform.eulerAngles = new Vector3(xAngle, yAngle, zAngle);
 
         // --------- Influence du terrain ---------
 
@@ -141,17 +150,19 @@ public class KartController : MonoBehaviour
 
         _accelerationLerpInterpolator = Mathf.Clamp01(_accelerationLerpInterpolator);
 
-        _speed = _accelerationCurve.Evaluate(_accelerationLerpInterpolator) * _speedMax;
-
         // --------- Utilisation d'un Boost ---------
 
         if (UseBoost)
         {
-            _speed = _speedMaxBoost;
+            speed = speedMaxBoost;
+        }
+        else if (isTrapped)
+        {
+            speed = speedMin;
         }
         else
         {
-            _speed = _accelerationCurve.Evaluate(_accelerationLerpInterpolator) * _speedMax * _terrainSpeedVariator;
+            speed = _accelerationCurve.Evaluate(_accelerationLerpInterpolator) * speedMax * _terrainSpeedVariator;
         }
 
         // --------- Mouvements du Kart ---------
@@ -168,7 +179,12 @@ public class KartController : MonoBehaviour
 
         //_carColliderAndMesh.eulerAngles = new Vector3(-angle, _carColliderAndMesh.eulerAngles.y, angleZ);
 
-        transform.eulerAngles = new Vector3(0, transform.eulerAngles.y + _rotationSpeed * Time.deltaTime * rotationInput, 0);
-        _rb.MovePosition(transform.position + transform.forward * _speed * Time.fixedDeltaTime);
+        var xAngle = Mathf.Clamp(transform.eulerAngles.x + 360, 320, 400);
+        var yAngle = transform.eulerAngles.y;
+        var zAngle = transform.eulerAngles.z;
+        transform.eulerAngles = new Vector3(xAngle, yAngle, zAngle);
+
+        transform.eulerAngles = new Vector3(0, transform.eulerAngles.y + rotationSpeed * Time.deltaTime * rotationInput, 0);
+        _rb.MovePosition(transform.position + transform.forward * speed * Time.fixedDeltaTime);
     }
 }

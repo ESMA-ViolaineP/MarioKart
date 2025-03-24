@@ -11,7 +11,7 @@ public class DeathZone : MonoBehaviour
     {
         if (isTrigerred == false)
         {
-            StartCoroutine(transition(other));
+            //other.GetComponent<Transform>().position = PlayerCircuitManager.Instance.CheckpointPosition;
         }
 
         isTrigerred = true;
@@ -20,14 +20,5 @@ public class DeathZone : MonoBehaviour
     void OnTriggerExit(Collider other)
     {
         isTrigerred = false;
-    }
-
-    private IEnumerator transition(Collider other)
-    {
-        _transitionImage.SetActive(true);
-        yield return new WaitForSeconds(1);
-        //other.GetComponent<Transform>().position = PlayerCircuitManager.Instance.CheckpointPosition;
-        yield return new WaitForSeconds(0.5f);
-        _transitionImage.SetActive(false);
     }
 }

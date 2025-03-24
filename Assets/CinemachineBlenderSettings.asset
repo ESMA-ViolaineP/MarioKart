@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: CinemachineBlenderSettings
   m_EditorClassIdentifier: 
   CustomBlends:
-  - From: 
+  - From: '**ANY CAMERA**'
     To: CinemachineCamera_Player_001
     Blend:
       Style: 0
@@ -24,8 +24,8 @@ MonoBehaviour:
         m_PreInfinity: 0
         m_PostInfinity: 0
         m_RotationOrder: 0
-  - From: 
-    To: CinemachineCamera_Player_001
+  - From: '**ANY CAMERA**'
+    To: CinemachineCamera_Player_002
     Blend:
       Style: 0
       Time: 0
