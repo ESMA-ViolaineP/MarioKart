@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class CheckPoint : MonoBehaviour
 {
-    public bool isFinishLine;
+    public bool IsFinishLine;
 
     private void OnTriggerEnter(Collider other)
     {
@@ -10,7 +10,6 @@ public class CheckPoint : MonoBehaviour
         if(otherLapManager != null )
         {
             otherLapManager.AddCheckPoint( this );
-            Debug.Log("checkpoint");
         }
     }
 }

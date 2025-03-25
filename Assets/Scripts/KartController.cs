@@ -102,7 +102,7 @@ public class KartController : MonoBehaviour
         if (Physics.Raycast(transform.position, transform.up * -1, out var info, 1, _layerMask))
         {
 
-            Ground terrainBellow = info.transform.GetComponent<Ground>();
+            GroundInfluence terrainBellow = info.transform.GetComponent<GroundInfluence>();
             if (terrainBellow != null)
             {
                 _terrainSpeedVariator = terrainBellow.speedVariator;

@@ -1,22 +1,62 @@
 using System.Collections.Generic;
+using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class LapManager : MonoBehaviour
 {
-    private int _lapNumber;
+    [Header("Checkpoint")]
+    [SerializeField]
     private List<CheckPoint> _checkpoints;
-    private int _numberOfCheckpoints;
+    private CheckPoint lastCheckpoint;
+    private int numberOfCheckpoints, checkpointCount;
+    private float distanceCheckpoint;
 
+    private int lapNumber;
 
-    private void Start()
+    [Header("UI")]
+    [SerializeField]
+    private TextMeshProUGUI _lapText;
+    [SerializeField]
+    private GameObject _menu;
+
+    [SerializeField]
+    private bool isPlayerOne;
+
+    void Start()
     {
-        _numberOfCheckpoints = FindObjectsByType<CheckPoint>(FindObjectsSortMode.None).Length;
+        _lapText.text = "Tour : " + lapNumber + "/3";
+
+        numberOfCheckpoints = FindObjectsByType<CheckPoint>(FindObjectsSortMode.None).Length;
         _checkpoints = new List<CheckPoint>();
+    }
+
+    void Update()
+    {
+        if (_checkpoints.Count > 0)
+        {
+            lastCheckpoint = _checkpoints[_checkpoints.Count - 1];
+        }
+
+        if (lastCheckpoint != null)
+        {
+            distanceCheckpoint = Vector3.Distance(transform.position, lastCheckpoint.transform.position);
+
+            if (isPlayerOne)
+            {
+                GameManager.Instance.CircuitManager.DistancePlayer001 = distanceCheckpoint;
+            }
+            else
+            {
+                GameManager.Instance.CircuitManager.DistancePlayer002 = distanceCheckpoint;
+            }
+        }
     }
 
     public void AddCheckPoint(CheckPoint checkPointToAdd)
     {
-        if (checkPointToAdd.isFinishLine)
+        if (checkPointToAdd.IsFinishLine)
         {
             FinishLap();
         }
@@ -24,19 +64,49 @@ public class LapManager : MonoBehaviour
         if (_checkpoints.Contains(checkPointToAdd) == false)
         {
             _checkpoints.Add(checkPointToAdd);
+            checkpointCount++;
+
+            if (isPlayerOne)
+            {
+                GameManager.Instance.CircuitManager.CheckpointsNumberPlayer001 = checkpointCount;
+            }
+            else
+            {
+                GameManager.Instance.CircuitManager.CheckpointsNumberPlayer002 = checkpointCount;
+            }
         }
     }
 
     private void FinishLap()
     {
-        if (_checkpoints.Count > _numberOfCheckpoints / 2)
+        if (_checkpoints.Count > numberOfCheckpoints / 2)
         {
-            _lapNumber++;
-            Debug.Log("Tour Fini, on entre dans le tour " + _lapNumber);
-            _checkpoints.Clear();
-            if (_lapNumber >= 3)
+            lapNumber++;
+
+            if (isPlayerOne)
             {
-                Debug.Log("Gg WP");
+                GameManager.Instance.CircuitManager.LapNumberPlayer001 = lapNumber;
+            }
+            else
+            {
+                GameManager.Instance.CircuitManager.LapNumberPlayer002 = lapNumber;
+            }
+
+            _lapText.text = "Tour : " + lapNumber + "/3";
+            _checkpoints.Clear();
+
+            if (lapNumber >= 3)
+            {
+                if (isPlayerOne)
+                {
+                    GameManager.Instance.CircuitManager.WinPlayer001 = true;
+                }
+                else
+                {
+                    GameManager.Instance.CircuitManager.WinPlayer002 = true;
+                }
+                _menu.gameObject.SetActive(true);
+                gameObject.SetActive(false);
             }
         }
     }

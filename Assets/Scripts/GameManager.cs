@@ -1,13 +1,30 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
-    public Material[] ColorMaterialKart;
+    [Header("Scripts")]
+    public CircuitManager CircuitManager;
 
+    [Header("Lists")]
+    public Material[] ColorMaterialKart;
+    public Sprite[] ImageKart;
+
+    [Header("Players Informations")]
+    [Header("Player selection")]
     public int SelectionPlayer01;
     public int SelectionPlayer02;
+
+    [Header("Player Name")]
+    public string NamePlayer01;
+    public string NamePlayer02;
+
+    [Header("Player Points")]
+    public int PointsPlayer01;
+    public int PointsPlayer02;
+
     private void Awake()
     {
         if (Instance == null)
@@ -19,5 +36,24 @@ public class GameManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+    }
+
+
+    void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (CircuitManager == null)
+        {
+            CircuitManager = Object.FindFirstObjectByType<CircuitManager>();
+        }
+    }
+
+    void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 }
