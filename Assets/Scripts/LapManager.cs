@@ -12,8 +12,7 @@ public class LapManager : MonoBehaviour
     private CheckPoint lastCheckpoint;
     private int numberOfCheckpoints, checkpointCount;
     private float distanceCheckpoint;
-
-    private int lapNumber;
+    public Vector3 PositionLastCheckpoint;
 
     [Header("UI")]
     [SerializeField]
@@ -22,7 +21,8 @@ public class LapManager : MonoBehaviour
     private GameObject _menu;
 
     [SerializeField]
-    private bool isPlayerOne;
+    private bool _isPlayerOne;
+    private int lapNumber;
 
     void Start()
     {
@@ -41,9 +41,10 @@ public class LapManager : MonoBehaviour
 
         if (lastCheckpoint != null)
         {
-            distanceCheckpoint = Vector3.Distance(transform.position, lastCheckpoint.transform.position);
+            PositionLastCheckpoint = lastCheckpoint.transform.position;
+            distanceCheckpoint = Vector3.Distance(transform.position, PositionLastCheckpoint);
 
-            if (isPlayerOne)
+            if (_isPlayerOne)
             {
                 GameManager.Instance.CircuitManager.DistancePlayer001 = distanceCheckpoint;
             }
@@ -66,7 +67,7 @@ public class LapManager : MonoBehaviour
             _checkpoints.Add(checkPointToAdd);
             checkpointCount++;
 
-            if (isPlayerOne)
+            if (_isPlayerOne)
             {
                 GameManager.Instance.CircuitManager.CheckpointsNumberPlayer001 = checkpointCount;
             }
@@ -83,7 +84,7 @@ public class LapManager : MonoBehaviour
         {
             lapNumber++;
 
-            if (isPlayerOne)
+            if (_isPlayerOne)
             {
                 GameManager.Instance.CircuitManager.LapNumberPlayer001 = lapNumber;
             }
@@ -97,7 +98,7 @@ public class LapManager : MonoBehaviour
 
             if (lapNumber >= 3)
             {
-                if (isPlayerOne)
+                if (_isPlayerOne)
                 {
                     GameManager.Instance.CircuitManager.WinPlayer001 = true;
                 }

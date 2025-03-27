@@ -17,6 +17,5 @@ public class LoadScene : MonoBehaviour
         _loadImage.SetActive(true);
         yield return new WaitForSeconds(1);
         SceneManager.LoadScene(sceneName);
-
     }
 }

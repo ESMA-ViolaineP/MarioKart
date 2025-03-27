@@ -21,14 +21,22 @@ public class KartController : MonoBehaviour
 
     [Header("Acceleration/Deceleration")]
     [SerializeField]
-    private float _accelerationFactor, _decelerationFactor, _accelerationLerpInterpolator;
-    private bool isAccelerating;
+    private float _accelerationFactor, _decelerationFactor;
+    public bool IsAccelerating;
+    public float AccelerationLerpInterpolator;
 
     [Header("Speed")]
-    private float speedMax = 10, speedMaxBoost = 10, speedMin = 0, speed;
+    private float speedMax = 10, speedMin = 0, speedShrunk = 5;
     private float rotationSpeed = 35f, maxAngle = 360;
+    public float Speed, SpeedMaxBoost = 15;
+
+    [Header("Items Effects")]
     public bool UseBoost;
-    public bool isTrapped;
+    private bool isTrapped;
+    private bool isShrunken;
+    private Vector3 originalScale;
+    private float originalYPosition;
+
 
     [Header("Terrain Influence")]
     [SerializeField]
@@ -40,7 +48,7 @@ public class KartController : MonoBehaviour
     [SerializeField]
     private AnimationCurve _accelerationCurve, _decelerationCurve;
 
-    // --------- Utilisation item de type Boost ---------
+    // --------- Utilisation items ---------
 
     public void Boost(int ItemDelay)
     {
@@ -71,9 +79,51 @@ public class KartController : MonoBehaviour
         yield return new WaitForSeconds(ItemDelay);
         isTrapped = false;
     }
+    
+    public void LightningEffect(int ShrinkFactor, int ItemDelay)
+    {
+        if (!isShrunken)
+        {
+            StartCoroutine(LightningRoutine(ShrinkFactor, ItemDelay));
+        }
+    }
+
+    private IEnumerator LightningRoutine(int ShrinkFactor, int ItemDelay)
+    {
+        isShrunken = true;
+
+        originalYPosition = transform.position.y;
+
+        transform.localScale = originalScale / ShrinkFactor;
+
+        float newScale = (originalScale.y - transform.localScale.y) / 2;
+        transform.position = new Vector3(transform.position.x, originalYPosition - newScale, transform.position.z);
+
+        yield return new WaitForSeconds(ItemDelay);
+
+        transform.localScale = originalScale;
+        transform.position = new Vector3(transform.position.x, originalYPosition, transform.position.z);
+
+        isShrunken = false;
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (isShrunken)
+        {
+            if (collision.gameObject.CompareTag("Player"))
+            {
+                var newScale = transform.localScale;
+                newScale.y = 0.5f;
+                transform.localScale = newScale;
+            }
+        }
+    }
+
+
     void Start()
     {
-        _accelerationLerpInterpolator = 0f;
+        AccelerationLerpInterpolator = 0f;
     }
 
     void Update()
@@ -84,12 +134,12 @@ public class KartController : MonoBehaviour
 
         if (Input.GetButtonDown(_accelerateInputName))
         {
-            isAccelerating = true;
+            IsAccelerating = true;
         }
 
         if (Input.GetButtonUp(_accelerateInputName))
         {
-            isAccelerating = false;
+            IsAccelerating = false;
         }
 
         if (rotationInput != 0)
@@ -118,67 +168,39 @@ public class KartController : MonoBehaviour
         }
     }
 
-    // --------- Contact lors d'une Pente ---------
-
-    private bool IsOnSlope(out RaycastHit hit, out float angle, out float angleZ)
-    {
-        hit = new RaycastHit();
-        angle = 0f;
-        angleZ = 0f;
-
-        if (Physics.Raycast(transform.position + transform.forward * .5f, Vector3.down, out hit, 0.8f))
-        {
-            angle = Vector3.Angle(Vector3.up, hit.normal);
-            angleZ = Vector3.Angle(Vector3.right, hit.normal);
-            return angle != 0 && angle <= maxAngle;
-        }
-        return false;
-    }
-
     private void FixedUpdate() // Note : FixedUpdate = lorsque l'on utilise la Physique
     {
         // --------- Acceleration et Deceleration---------
 
-        if (isAccelerating)
+        if (IsAccelerating)
         {
-            _accelerationLerpInterpolator += _accelerationFactor * Time.deltaTime;
+            AccelerationLerpInterpolator += _accelerationFactor * Time.deltaTime;
         }
         else
         {
-            // La décélération est plus rapide
-            _accelerationLerpInterpolator -= _decelerationFactor * 2f * Time.deltaTime;
+            AccelerationLerpInterpolator -= _decelerationFactor * 2f * Time.deltaTime;
         }
 
-        _accelerationLerpInterpolator = Mathf.Clamp01(_accelerationLerpInterpolator);
+        AccelerationLerpInterpolator = Mathf.Clamp01(AccelerationLerpInterpolator);
 
-        // --------- Utilisation d'un Boost ---------
+        // --------- Utilisation/Impact d'un Item ---------
 
         if (UseBoost)
         {
-            speed = speedMaxBoost;
+            Speed = SpeedMaxBoost;
         }
         else if (isTrapped)
         {
-            speed = speedMin;
+            Speed = speedMin;
+        }
+        else if (isShrunken)
+        {
+            Speed = speedShrunk;
         }
         else
         {
-            speed = _accelerationCurve.Evaluate(_accelerationLerpInterpolator) * speedMax * _terrainSpeedVariator;
+            Speed = _accelerationCurve.Evaluate(AccelerationLerpInterpolator) * speedMax * _terrainSpeedVariator;
         }
-
-        // --------- Mouvements du Kart ---------
-
-        //var forward = transform.forward;
-        //var angle = 0f;
-        //var angleZ = 0f;
-
-        //if (IsOnSlope(out var hit, out angle, out angleZ))
-        //{
-        //    forward = Vector3.ProjectOnPlane(forward, hit.normal).normalized;
-
-        //}
-
-        //_carColliderAndMesh.eulerAngles = new Vector3(-angle, _carColliderAndMesh.eulerAngles.y, angleZ);
 
         var xAngle = Mathf.Clamp(transform.eulerAngles.x + 360, 320, 400);
         var yAngle = transform.eulerAngles.y;
@@ -186,6 +208,6 @@ public class KartController : MonoBehaviour
         transform.eulerAngles = new Vector3(xAngle, yAngle, zAngle);
 
         transform.eulerAngles = new Vector3(0, transform.eulerAngles.y + rotationSpeed * Time.deltaTime * rotationInput, 0);
-        _rb.MovePosition(transform.position + transform.forward * speed * Time.fixedDeltaTime);
+        _rb.MovePosition(transform.position + transform.forward * Speed * Time.fixedDeltaTime);
     }
 }

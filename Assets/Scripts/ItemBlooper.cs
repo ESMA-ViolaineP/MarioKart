@@ -14,7 +14,7 @@ public class ItemBlooper : Item
         {
             if (thisPlayer != myPlayer)
             {
-                thisPlayer.InkSplash();
+                player.PlayerDisplay.InkSplash();
             }
         }
     }
