@@ -1,26 +1,27 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class PlayerItemManager : MonoBehaviour
 {
+    [Header("Scripts")]
+    public KartController Kart;
+    public PlayerDisplay PlayerDisplay;
+
+    [Header("Item")]
     [SerializeField]
     private List<Item> _itemList;
-    
     [SerializeField]
     private Item _currentItem;
-
     [SerializeField]
-    private Image _itemImage;
-
-    [SerializeField]
-    private int _numberOfItemUse;
-
-    public KartController Kart;
+    private string _itemInput;
+    public Image ItemImage;
+    public int NumberOfItemUse;
 
     private void Update()
     {
-        if(Input.GetKeyDown(KeyCode.X))
+        if(Input.GetButtonDown(_itemInput))
         {
             UseItem();
         }
@@ -29,10 +30,24 @@ public class PlayerItemManager : MonoBehaviour
     {
         if(_currentItem == null)
         {
-            _currentItem = _itemList[Random.Range(0, _itemList.Count)];
-            _itemImage.sprite = _currentItem.itemSprite;
-            _numberOfItemUse = _currentItem.itemUseCount;
+            StartCoroutine(DisplayItems());
         }
+    }
+
+    private IEnumerator DisplayItems()
+    {
+        int index = 0;
+
+        while (index < 9)
+        {
+            ItemImage.sprite = _itemList[index%_itemList.Count].ItemSprite;
+            index++;
+            yield return new WaitForSeconds(0.1f);
+        }
+
+        _currentItem = _itemList[Random.Range(0, _itemList.Count)];
+        ItemImage.sprite = _currentItem.ItemSprite;
+        NumberOfItemUse = _currentItem.ItemUseCount;
     }
 
     public void UseItem()
@@ -40,11 +55,12 @@ public class PlayerItemManager : MonoBehaviour
         if (_currentItem != null)
         {
             _currentItem.Activation(this);
-            _numberOfItemUse--;
-            if (_numberOfItemUse <= 0 )
+            NumberOfItemUse--;
+
+            if (NumberOfItemUse <= 0 )
             {
                 _currentItem = null;
-                _itemImage.sprite=null;
+                ItemImage.sprite=null;
             }
         }
     }

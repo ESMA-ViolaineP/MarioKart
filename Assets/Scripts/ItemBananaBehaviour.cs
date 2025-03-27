@@ -7,9 +7,8 @@ public class ItemBananaBehaviour : MonoBehaviour
         KartController kartController = other.GetComponent<KartController>();
         if (kartController != null)
         {
-            kartController.Trap(3);
+            kartController.Trap(0.5f);
             Destroy(gameObject);
         }
-
     }
 }

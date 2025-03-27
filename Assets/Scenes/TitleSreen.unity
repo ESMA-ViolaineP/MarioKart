@@ -3989,7 +3989,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 061dd338a4ab3c241a71ad0105d2a9c5, type: 3}
   - {fileID: 21300000, guid: beda1597bc8760c46a240ff03397f568, type: 3}
   SelectionPlayer01: 0
-  SelectionPlayer02: 0
+  SelectionPlayer02: 4
   NamePlayer01: 
   NamePlayer02: 
   PointsPlayer01: 0

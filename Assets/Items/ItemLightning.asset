@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 33595a7e78e5356468ea037eb965ba72, type: 3}
-  m_Name: Item_Star
+  m_Script: {fileID: 11500000, guid: 795301992bfe48b468f323ca4a0fae52, type: 3}
+  m_Name: ItemLightning
   m_EditorClassIdentifier: 
-  itemSprite: {fileID: 21300000, guid: eb33487a9491cc84b88231946ee55762, type: 3}
-  itemName: Star
-  itemUseCount: 1
+  ItemSprite: {fileID: 21300000, guid: 4a7706d4899e2f846b53e3c938511f81, type: 3}
+  ItemName: Lightning
+  ItemUseCount: 1

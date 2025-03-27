@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e857ca4b766e6d348a45cccd7d026b40, type: 3}
   m_Name: Item_Mushroom
   m_EditorClassIdentifier: 
-  itemSprite: {fileID: 0}
-  itemName: Red Mushroom
-  itemUseCount: 1
+  ItemSprite: {fileID: 21300000, guid: d6f430b8cd80348408b888c14f9934ea, type: 3}
+  ItemName: Mushroom
+  ItemUseCount: 1
+  twoMushrooms: {fileID: 21300000, guid: 257c0b01f192b5a4b8dc8eb313639e85, type: 3}
+  oneMushroom: {fileID: 21300000, guid: d6f430b8cd80348408b888c14f9934ea, type: 3}

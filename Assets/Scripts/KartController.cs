@@ -57,7 +57,7 @@ public class KartController : MonoBehaviour
         UseBoost = false;
     }
 
-    public void Trap(int ItemDelay)
+    public void Trap(float ItemDelay)
     {
         if (!isTrapped)
         {
@@ -65,7 +65,7 @@ public class KartController : MonoBehaviour
         }
     }
 
-    private IEnumerator TrapRoutine(int ItemDelay)
+    private IEnumerator TrapRoutine(float ItemDelay)
     {
         isTrapped = true;
         yield return new WaitForSeconds(ItemDelay);
@@ -101,8 +101,8 @@ public class KartController : MonoBehaviour
 
         if (Physics.Raycast(transform.position, transform.up * -1, out var info, 1, _layerMask))
         {
-
             GroundInfluence terrainBellow = info.transform.GetComponent<GroundInfluence>();
+
             if (terrainBellow != null)
             {
                 _terrainSpeedVariator = terrainBellow.speedVariator;
@@ -125,6 +125,7 @@ public class KartController : MonoBehaviour
         hit = new RaycastHit();
         angle = 0f;
         angleZ = 0f;
+
         if (Physics.Raycast(transform.position + transform.forward * .5f, Vector3.down, out hit, 0.8f))
         {
             angle = Vector3.Angle(Vector3.up, hit.normal);
