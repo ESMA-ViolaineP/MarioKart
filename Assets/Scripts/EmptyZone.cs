@@ -3,12 +3,15 @@ using UnityEngine;
 
 public class EmptyZone : MonoBehaviour
 {
+    private bool playerStillInside;
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
         {
             if (CompareTag("SlowEmptyZone"))
             {
+                playerStillInside = true;
                 StartCoroutine(CheckIfStillInside(other));
             }
             else
@@ -18,11 +21,19 @@ public class EmptyZone : MonoBehaviour
         }
     }
 
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            playerStillInside = false;
+        }
+    }
+
     private IEnumerator CheckIfStillInside(Collider other)
     {
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(1.5f);
 
-        if (other != null && other.CompareTag("Player"))
+        if (playerStillInside)
         {
             StartCoroutine(Respawn(other));
         }

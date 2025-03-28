@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class GroundBoost : MonoBehaviour
@@ -15,8 +16,15 @@ public class GroundBoost : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            var kartController = other.GetComponent<KartController>();
-            kartController.UseBoost = false;
+            StartCoroutine(TurboRoutineEnd(other));
         }
     }
+
+    private IEnumerator TurboRoutineEnd(Collider other)
+    {
+        yield return new WaitForSeconds(1);
+        var kartController = other.GetComponent<KartController>();
+        kartController.UseBoost = false;
+    }
+
 }

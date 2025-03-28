@@ -25,6 +25,13 @@ public class GameManager : MonoBehaviour
     public int PointsPlayer01;
     public int PointsPlayer02;
 
+
+    private void Start()
+    {
+        QualitySettings.vSyncCount = 0;
+        Application.targetFrameRate = 120;
+    }
+
     private void Awake()
     {
         if (Instance == null)

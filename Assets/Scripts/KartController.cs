@@ -26,9 +26,9 @@ public class KartController : MonoBehaviour
     public float AccelerationLerpInterpolator;
 
     [Header("Speed")]
-    private float speedMax = 10, speedMin = 0, speedShrunk = 5;
+    private float speedMax = 15, speedMin = 0, speedShrunk = 10;
     private float rotationSpeed = 35f;
-    public float Speed, SpeedMaxBoost = 15;
+    public float Speed, SpeedMaxBoost = 20;
 
     [Header("Items Effects")]
     public bool UseBoost;
@@ -145,7 +145,10 @@ public class KartController : MonoBehaviour
         {
             transform.eulerAngles += Vector3.up * rotationInput * rotationSpeed * Time.deltaTime;
         }
+    }
 
+    private void FixedUpdate() // Note : FixedUpdate = lorsque l'on utilise la Physique
+    {
         // --------- Influence du terrain ---------
 
         if (Physics.Raycast(transform.position, transform.up * -1, out var info, 1, _layerMask))
@@ -165,10 +168,16 @@ public class KartController : MonoBehaviour
         {
             _terrainSpeedVariator = 1;
         }
-    }
 
-    private void FixedUpdate() // Note : FixedUpdate = lorsque l'on utilise la Physique
-    {
+        // --------- Obstacles ---------
+
+        //if (Physics.Raycast(transform.position, transform.forward, out var info2, 1, _layerMask))
+        //{
+            
+        //}
+
+            
+
         // --------- Acceleration et Deceleration---------
 
         if (IsAccelerating)

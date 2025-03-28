@@ -9,18 +9,18 @@ Version Azerty
 		Z = Accélérer
 		Q = Tourner à gauche
 		D = Tourner à droite 
-		ALT Left = Utiliser un Item
+		Left MAJ = Utiliser un Item
 Version Qwerty
 		W = Accélérer
 		A = Tourner à gauche
 		D = Tourner à droite 
-		ALT Left = Utiliser un Item
+		Left MAJ = Utiliser un Item
 ⤿ Joueur 2 :
 Toute version
 		Up Arrow = Accélérer
 		Left Arrow = Tourner à gauche
 		Right Arrow = Tourner à droite 
-		CTRL Right = Utiliser un Item
+		Right MAJ = Utiliser un Item
 
 → Ressenti
 
