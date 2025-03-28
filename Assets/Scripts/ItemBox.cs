@@ -7,7 +7,7 @@ public class ItemBox : MonoBehaviour
     [SerializeField]
     private MeshRenderer _meshRenderer, _text;
     [SerializeField]
-    private Collider _collider;
+    private Collider _itemBoxCollider;
     [SerializeField]
     private float _waitBeforeRespawn = 1;
 
@@ -24,11 +24,11 @@ public class ItemBox : MonoBehaviour
 
     private IEnumerator Respawn()
     {
-        _collider.enabled = false;
+        _itemBoxCollider.enabled = false;
         _text.enabled = false;
         _meshRenderer.enabled = false;
         yield return new WaitForSeconds(_waitBeforeRespawn);
-        _collider.enabled = true;
+        _itemBoxCollider.enabled = true;
         _text.enabled = true;
         _meshRenderer.enabled = true;
     }

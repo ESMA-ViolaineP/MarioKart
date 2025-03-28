@@ -2,5 +2,5 @@ using UnityEngine;
 
 public class GroundInfluence : MonoBehaviour
 {
-    public float speedVariator = 0.5f;
+    public float SpeedVariator = 0.5f;
 }

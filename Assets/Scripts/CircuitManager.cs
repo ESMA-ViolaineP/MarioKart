@@ -29,6 +29,16 @@ public class CircuitManager : MonoBehaviour
     [SerializeField]
     private GameObject _resultMenu;
 
+    void Awake()
+    {
+        GameManager gameManger = FindFirstObjectByType<GameManager>();
+
+        if (gameManger != null)
+        {
+            gameManger.FindCircuitManager(this);
+        }
+    }
+
     void Start()
     {
      _positionOnePlayer01.SetActive(true);   

@@ -5,7 +5,7 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
-    [Header("Scripts")]
+    [Header("Script")]
     public CircuitManager CircuitManager;
 
     [Header("Lists")]
@@ -38,22 +38,8 @@ public class GameManager : MonoBehaviour
         }
     }
 
-
-    void OnEnable()
+    public void FindCircuitManager(CircuitManager circuitManager)
     {
-        SceneManager.sceneLoaded += OnSceneLoaded;
-    }
-
-    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        if (CircuitManager == null)
-        {
-            CircuitManager = Object.FindFirstObjectByType<CircuitManager>();
-        }
-    }
-
-    void OnDisable()
-    {
-        SceneManager.sceneLoaded -= OnSceneLoaded;
+        CircuitManager = circuitManager;
     }
 }

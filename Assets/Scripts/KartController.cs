@@ -27,7 +27,7 @@ public class KartController : MonoBehaviour
 
     [Header("Speed")]
     private float speedMax = 10, speedMin = 0, speedShrunk = 5;
-    private float rotationSpeed = 35f, maxAngle = 360;
+    private float rotationSpeed = 35f;
     public float Speed, SpeedMaxBoost = 15;
 
     [Header("Items Effects")]
@@ -93,7 +93,7 @@ public class KartController : MonoBehaviour
         isShrunken = true;
 
         originalYPosition = transform.position.y;
-
+        originalScale = transform.localScale;
         transform.localScale = originalScale / ShrinkFactor;
 
         float newScale = (originalScale.y - transform.localScale.y) / 2;
@@ -114,12 +114,11 @@ public class KartController : MonoBehaviour
             if (collision.gameObject.CompareTag("Player"))
             {
                 var newScale = transform.localScale;
-                newScale.y = 0.5f;
+                newScale.y = 0.1f;
                 transform.localScale = newScale;
             }
         }
     }
-
 
     void Start()
     {
@@ -155,7 +154,7 @@ public class KartController : MonoBehaviour
 
             if (terrainBellow != null)
             {
-                _terrainSpeedVariator = terrainBellow.speedVariator;
+                _terrainSpeedVariator = terrainBellow.SpeedVariator;
             }
             else
             {
@@ -195,7 +194,7 @@ public class KartController : MonoBehaviour
         }
         else if (isShrunken)
         {
-            Speed = speedShrunk;
+            Speed = _accelerationCurve.Evaluate(AccelerationLerpInterpolator) * speedShrunk * _terrainSpeedVariator;
         }
         else
         {

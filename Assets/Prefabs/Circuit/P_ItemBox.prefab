@@ -124,7 +124,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _meshRenderer: {fileID: 2745249125892750235}
   _text: {fileID: 7977984546299600346}
-  _collider: {fileID: 0}
+  _itemBoxCollider: {fileID: 551206914571321797}
   _waitBeforeRespawn: 1
 --- !u!1 &1783779116254371968
 GameObject:

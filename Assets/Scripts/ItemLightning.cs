@@ -13,7 +13,8 @@ public class ItemLightning : Item
         {
             if (thisPlayer != myPlayer)
             {
-                player.Kart.LightningEffect(2, 3);
+                var playerKart = thisPlayer.GetComponent<KartController>();
+                playerKart.LightningEffect(2, 3);
             }
         }
     }
